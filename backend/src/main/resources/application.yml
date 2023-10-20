@@ -1,2 +1,22 @@
+# TODO 配置数据源相关信息
+
 server:
-  port: 3080
+  port : 3080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/kob
+    username: root
+    password: root
+    type: com.alibaba.druid.pool.DruidDataSource
+  main:
+    banner-mode: off #关闭SpringBoot启动图标
+
+#开启mp的日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #关闭mybatisplus启动图标
+  global-config:
+    banner: off

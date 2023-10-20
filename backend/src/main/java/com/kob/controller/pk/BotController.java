@@ -1,4 +1,4 @@
-package com.kob.controller;
+package com.kob.controller.pk;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/pk/")
-public class botController {
+public class BotController {
 
     @GetMapping("/getbotinfo")
     public Map<String, String> getBotInfo() {
