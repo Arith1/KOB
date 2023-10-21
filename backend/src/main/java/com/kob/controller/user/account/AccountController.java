@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/user/account/")
-public class accountController {
+public class AccountController {
 
     @Autowired
     private InfoService infoService;
