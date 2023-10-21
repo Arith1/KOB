@@ -1,4 +1,4 @@
-package com.kob.service.Impl;
+package com.kob.service.impl;
 
 import com.kob.pojo.User;
 import com.kob.service.UserService;

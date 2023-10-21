@@ -1,4 +1,4 @@
-package com.kob.service.Impl.utils;
+package com.kob.service.impl.utils;
 
 import com.kob.pojo.User;
 import lombok.AllArgsConstructor;
@@ -46,7 +46,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public boolean isEnabled() {
-        return false;
+    public boolean isEnabled() {//程序设置错误
+        return true;
     }
 }

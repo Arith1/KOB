@@ -14,9 +14,11 @@ class BackendApplicationTests {
     @Test
     void testEnconder(){
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        System.out.println(passwordEncoder.encode("user"));
+        System.out.println(passwordEncoder.encode("miyan"));
         System.out.println(passwordEncoder.encode("user"));
         System.out.println(passwordEncoder.matches("user",passwordEncoder.encode("user")));
+        System.out.println(passwordEncoder.matches("miyan","$2a$10$UaSPRfuUSOT7NfpJ/LDq3eS7uJV6NszRtayYGPo9d7Ut2j2/o3Iwe"));
+
     }
 
 }

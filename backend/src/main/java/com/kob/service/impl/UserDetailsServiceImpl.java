@@ -1,9 +1,9 @@
-package com.kob.service.Impl;
+package com.kob.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kob.mapper.UserMapper;
 import com.kob.pojo.User;
-import com.kob.service.Impl.utils.UserDetailsImpl;
+import com.kob.service.impl.utils.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
