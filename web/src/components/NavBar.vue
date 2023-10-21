@@ -40,16 +40,17 @@
           </li>
         </ul>
 
-        <ul class="navbar-nav" v-else>
+        <ul class="navbar-nav" v-else-if="!$store.state.user.pulling_info">
+          <!-- 当没有拉取信息时再显示  -->
           <li class="nav-item">
             <router-link class="nav-link" :to="{ name: 'user_account_login' }" role="button">
               登录
             </router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" :to="{ name: 'user_account_register' }" role="button">
+            <router-link class="nav-link" :to="{ name: 'user_account_register' }" role="button">
               注册
-            </a>
+            </router-link>
           </li>
         </ul>
 
