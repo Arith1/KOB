@@ -18,7 +18,4 @@ body{
   background-image: url("./assets/background.png");
   background-size: cover;
 }
-div{
-  color:aliceblue
-}
 </style>

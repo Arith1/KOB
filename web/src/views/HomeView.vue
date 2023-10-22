@@ -12,7 +12,5 @@ export default {
 </script>
 
 <style scoped>
-div{
-    color :#ccccd6
-}
+
 </style>
