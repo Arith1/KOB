@@ -18,7 +18,10 @@ export default {
         const store = useStore();
 
         onMounted(() => {
-            new GameMap(canvas.value.getContext('2d'), parent.value, store) //传过sotre
+            store.commit(   //装object存入到全局变量中
+                "updateGameObject",
+                new GameMap(canvas.value.getContext('2d'), parent.value, store) //传过sotre
+            )
         });
 
         return {

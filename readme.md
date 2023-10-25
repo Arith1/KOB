@@ -34,8 +34,7 @@ springboot工程课
     5.实现修改按钮:每个bot对应一个modal
     6.实现代码编辑器:安装vue3-ace-editer依赖以及ace-builds依赖
 #6.1 匹配系统
-    1.集成WebSocket:添加spring-boot-starter-websocket依赖
-        1.1创建WebSocketServer实例
+    1.集成WebSocket:添加spring-boot-starter-websocket依赖       1.1创建WebSocketServer实例
         1.2创建config.WebSocketConfig类
     2.添加fastjson依赖前后端用json交流
     3.更改config.SecurityConfig类重载configure方法
@@ -43,3 +42,11 @@ springboot工程课
     5.创建consumer.utils.JwtAuthentication类用来处理连接时前端返回的token
     6.创建前端后端连接匹配界面
     7.将gamemap逻辑放到后端实现gamemap类
+#6.2 
+    1.实现player类
+        1.1同步玩家位置：两个玩家的蛇都要在左下角
+    2.多线程Game继承Thread类，实现多线程
+    3.ReentrantLock对对战界面加锁
+    4.将蛇的所有操作转移到后端判断
+    5.添加结果页面
+    6.数据库添加新表record，后端创建record相关类，实现比赛完成后存放比赛记录

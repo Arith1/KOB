@@ -39,11 +39,13 @@ export default {
             if (match_btn_info.value === "Ready") {
                 match_btn_info.value = "Chanel";
                 store.state.pk.socket.send(JSON.stringify({
+                    username: store.state.user.username,
                     event: "start-matching",
                 }));
             } else {
                 match_btn_info.value = "Ready";
                 store.state.pk.socket.send(JSON.stringify({
+                    username: store.state.user.username,
                     event: "stop-matching",
                 }));
             }

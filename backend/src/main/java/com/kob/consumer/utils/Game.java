@@ -1,23 +1,70 @@
 package com.kob.consumer.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.kob.consumer.WebSocketServer;
+import com.kob.pojo.Record;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Game {
-    final private Integer rows;
-    final private Integer cols;
-    final private Integer inner_walls_count;
-    final private int[][] g;
-    final private static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};//偏移量
+//TODO 多线程
+public class Game extends Thread{
+    private final Integer rows;
+    private final Integer cols;
+    private final Integer inner_walls_count;
+    private final int[][] g;
+    private final static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};//偏移量
 
-    public Game(Integer rows, Integer cols, Integer inner_walls_count) {
+    private final Player playerA,playerB;
+    private Integer nextStepA = null;   //下一步操作
+    private Integer nextStepB = null;
+
+    private String status = "playing"; //整个游戏的状态    playing->finished
+    private String loser = ""; //all:平局 a:a输了 b:b输了
+
+    //TODO 加锁
+    private ReentrantLock lock = new ReentrantLock();   //
+
+    public Game(Integer rows, Integer cols, Integer inner_walls_count, Integer idA, Integer idB) {
         this.rows = rows;
         this.cols = cols;
         this.inner_walls_count = inner_walls_count;
         this.g = new int[rows][cols];
+        playerA = new Player(idA, rows - 2,1,new ArrayList<>());
+        playerB = new Player(idB, 1,cols - 2,new ArrayList<>());
+    }
+
+    public Player getPlayerA(){
+        return playerA;
+    }
+    public Player getPlayerB(){
+        return playerB;
     }
 
     public int[][] getG() {
         return g;
+    }
+
+    public void setNextStepA(Integer nextStepA) {
+        lock.lock();
+        try {
+            this.nextStepA = nextStepA;
+        }finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void setNextStepB(Integer nextStepB) {
+        lock.lock();
+        try {
+            this.nextStepB = nextStepB;
+        }finally {
+            lock.unlock();
+        }
     }
 
     private boolean check_connectivity(int sx, int sy, int tx, int ty) {    //判断连通性
@@ -75,6 +122,167 @@ public class Game {
         for (int i = 0; i < 1000; i ++ ) {
             if (draw())
                 break;
+        }
+    }
+
+    private boolean nextStep() {
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int i = 0; i < 50; i ++ ) {
+            try {
+                Thread.sleep(100);
+                lock.lock();
+                try {
+                    if (nextStepA != null && nextStepB != null) {
+                        playerA.getSteps().add(nextStepA);
+                        playerB.getSteps().add(nextStepB);
+                        return true;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+
+    }
+
+    private boolean check_valid(List<Cell> cellsA, List<Cell> cellsB) { // 检测目标位置是否合法：没有撞到两条蛇的身体和障碍物
+        int n = cellsA.size();
+        Cell cell = cellsA.get(n - 1);
+        if (g[cell.x][cell.y] == 1) return false;   //撞到墙了
+
+        for (int i = 0; i < n - 1; i ++ ) {         //A蛇是否重合
+            if (cellsA.get(i).x == cell.x && cellsA.get(i).y == cell.y)
+                return false;
+        }
+
+        for (int i = 0; i < n - 1; i ++ ) {         //B蛇是否重合
+            if (cellsB.get(i).x == cell.x && cellsB.get(i).y == cell.y)
+                return false;
+        }
+
+        return true;
+    }
+
+
+    private void judge(){   //判断两条蛇下一步是否合法
+        List<Cell> cellsA = playerA.getCells();
+        List<Cell> cellsB = playerB.getCells();
+
+        boolean validA = check_valid(cellsA, cellsB);
+        boolean validB = check_valid(cellsB, cellsA);
+        if (!validA || !validB) {
+            status = "finished";
+
+            if (!validA && !validB) {   //都有非法操作全输了
+                loser = "all";
+            } else if (!validA) {
+                loser = "A";
+            } else {
+                loser = "B";
+            }
+        }
+
+    }
+    private void sendAllMessage(String message){    //广播消息
+
+        WebSocketServer.users.get(playerA.getId()).sendMessage(message);
+        WebSocketServer.users.get(playerB.getId()).sendMessage(message);
+    }
+    private void sendMove(){    //向两个client转递移动操作
+        System.out.println("移动操作");
+        lock.lock();
+        try{
+            JSONObject resp = new JSONObject();
+            resp.put("event", "move");
+            resp.put("a_direction", nextStepA);
+            resp.put("b_direction", nextStepB);
+            sendAllMessage(resp.toJSONString());
+            nextStepA = nextStepB = null;
+        }finally {
+            lock.unlock();
+        }
+
+    }
+    private String getMapString() { //获取地图
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < rows; i ++ ) {
+            for (int j = 0; j < cols; j ++ ) {
+                res.append(g[i][j]);
+            }
+        }
+        return res.toString();
+    }
+
+    private void saveToDatabase(){  //将对局保存到数据库中
+        Record record = new Record(
+                null,
+                playerA.getId(),
+                playerA.getSx(),
+                playerA.getSy(),
+                playerB.getId(),
+                playerB.getSx(),
+                playerB.getSy(),
+                playerA.getStepsString(),
+                playerB.getStepsString(),
+                getMapString(),
+                loser,
+                new Date()
+        );
+
+        WebSocketServer.recordMapper.insert(record);
+
+    }
+
+    private void sendResult(){  //公布结果
+        System.out.println("公布结果");
+        JSONObject resp = new JSONObject();
+        resp.put("event", "result");
+        resp.put("loser", loser);
+        saveToDatabase();
+        sendAllMessage(resp.toJSONString());
+    }
+
+    //重写run函数
+    @Override
+    public void run() {
+        System.out.println("run");
+        for(int i = 0; i < 1000; i ++){
+            if(nextStep()){ //是否获取下一步操作
+                judge();
+                System.out.println("status = " + status);
+                if(status.equals("playing")){
+                    sendMove();
+                } else {
+                    sendResult();
+                    break;
+                }
+            }else{
+                status = "finished";
+                lock.lock();
+                try {
+                    if(nextStepA == null && nextStepB == null){
+                        loser = "all";
+
+                    }else if(nextStepA == null){
+                        loser = "A";
+                    }else{
+                        loser = "B";
+                    }
+                }finally {
+                    lock.unlock();
+                }
+                sendResult();
+                break;//游戏结束
+            }
         }
     }
 }
