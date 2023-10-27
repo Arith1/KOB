@@ -50,3 +50,16 @@ springboot工程课
     4.将蛇的所有操作转移到后端判断
     5.添加结果页面
     6.数据库添加新表record，后端创建record相关类，实现比赛完成后存放比赛记录
+#6.3
+    1.创建springcloud微服务项目backendcloud,添加spring cloud 依赖
+        1.1添加matchingsystem模块，将web端和matching模块分开，将backend中的matching匹配模块移到这里
+        1.2添加backend模块，将web端移动过来
+    2.将匹配池移除backend模块
+    3.添加RestTemplateConfig类，注入Ioc容器，用来在两个springboot中通信
+    4.更新user表结构，将bot里的rating，换到user中更加合理，更新pojo
+    5.实现匹配池线程、
+#7 bot代码的执行
+    1.创建springcloud微服务项目botrunningsystem
+    2.添加joor-java-8依赖用来动态编译java代码
+    3.在前端-websocket-mathingsystem-前端-backend中转递的信息加上botid因为要实现使用bot代码或者本人亲自比赛
+

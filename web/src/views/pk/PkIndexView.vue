@@ -25,6 +25,8 @@ export default {
         const store = useStore();
         const socketUrl = `ws://localhost:3080/websocket/${store.state.user.token}/`;
 
+        
+
         let socket = null;
         onMounted(() => {
 
@@ -53,7 +55,7 @@ export default {
                     //成功推迟3秒后转移到gamemap页面
                     setTimeout(() => {
                         store.commit("updateStatus", "playing");
-                    }, 1000);
+                    }, 200);
                     store.commit("updateGame", data.game);
                 }else if (data.event === "move"){
                     console.log(data);
@@ -83,6 +85,7 @@ export default {
         });
 
         onUnmounted(() => {
+            store.commit("updateLoser", "none");
             //断开链接,否则每次打开都会创建新的链接
             socket.close();
             store.commit("updateStatus", "matching");//断开后，需要重新匹配

@@ -24,10 +24,13 @@
 import { useStore } from 'vuex';
 
 export default {
+
     setup() {
         const store = useStore();
 
+
         const restart = () => {
+            console.log("restart")
             store.commit("updateStatus", "matching");
             store.commit("updateLoser", "none");
             store.commit("updateOpponent", {
@@ -37,7 +40,7 @@ export default {
         }
 
         return {
-            restart
+            restart,
         };
     }
 }

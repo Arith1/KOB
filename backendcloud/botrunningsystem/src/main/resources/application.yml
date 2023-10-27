@@ -1,0 +1,8 @@
+server:
+  port : 3082
+
+spring:
+  main:
+    banner-mode: off #关闭SpringBoot启动图标
+
+
