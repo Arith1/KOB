@@ -25,7 +25,7 @@ export default {
         const store = useStore();
         const socketUrl = `ws://localhost:3080/websocket/${store.state.user.token}/`;
 
-        
+        store.commit("updateIsRecord", false);//恢复
 
         let socket = null;
         onMounted(() => {

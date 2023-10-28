@@ -33,7 +33,7 @@ public class WebSocketServer {
     private Session session = null;
     //每个链接由session维护
 
-    private static UserMapper userMapper;
+    public static UserMapper userMapper;
     private static BotMapper botMapper;
     public static RecordMapper recordMapper;
     public static RestTemplate restTemplate;

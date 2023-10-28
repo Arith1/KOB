@@ -62,4 +62,7 @@ springboot工程课
     1.创建springcloud微服务项目botrunningsystem
     2.添加joor-java-8依赖用来动态编译java代码
     3.在前端-websocket-mathingsystem-前端-backend中转递的信息加上botid因为要实现使用bot代码或者本人亲自比赛
+#8 创建对战列表
+    1.导入mybatis分页类
+    2.实现recordview
 
